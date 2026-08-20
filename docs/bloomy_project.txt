@@ -1,0 +1,49 @@
+
+Knowledge Tracing (predicting P(correct) on a skill given past attempts)
+
+
+Bloomy is an AI-powered mastery learning for K-12.
+
+Bloomy helps students learn more efficiently by using AI to identify exactly what a student should learn and when they should learn it. We provide adaptive and personalized curriculum to K-12, starting with English Language Arts, Math, and Writing.
+
+What Bloomy does
+
+Bloomy starts with a diagnostic (we integrate with third-party diagnostics and provide our own in-house one) and places each student onto a personalized learning path. Students work one skill at a time, get a short, standards-aligned lesson, practice, ask BloomyBot for Socratic help when they're stuck, and only move forward after showing 90%+ mastery. The skill path updates live based on the student’s performance and our own knowledge graph.
+
+Our knowledge graph informs skill progression to make learning more efficient.
+
+Parents and teachers can see what the student has mastered, what's in progress, and where they need support.
+
+The challenge has always been scale. Schools cannot realistically provide every student with a dedicated tutor.
+
+Bloomy addresses this challenge by using large language models to provide the benefits of one-on-one instruction at scale. The platform delivers personalized, mastery-based learning in English Language Arts, math, and writing.
+
+---
+How does your AI system determine what each student should learn next?
+
+Bloomy uses a knowledge graph built on established educational standards from Learning Commons and Illustrative Mathematics to map how skills connect and which concepts students need to master first. Rather than simply recognizing an incorrect answer, the platform identifies the underlying cause of a student’s difficulty.
+
+For example, if a student struggles to identify an author’s purpose, the underlying issue may be difficulty understanding complex sentence structure. Instead of repeatedly practicing the same skill, Bloomy directs the student to strengthen that prerequisite first. BloomyBot also remembers previous interactions, allowing it to recognize recurring misconceptions and adapt its guidance based on how each student learns over time.
+
+---
+Bloomy provides reports at the individual student, small-group, classroom, and school levels. By capturing detailed learning data, including how long students spend on activities and how quickly they master new skills, the platform gives teachers clear insight into skill-level performance, overall progress, and growth over time.
+
+One of Bloomy’s most valuable features is its ability to identify patterns across students. The platform can group students struggling with the same concept and automatically generate instructional plans tailored to each group. As Bloomy continues to learn from more data, our goal is to move beyond tracking student progress to predicting where students are most likely to struggle next, allowing teachers to intervene before confusion becomes a larger obstacle. Ultimately, we want to give teachers the information they need to provide every student with the individualized support that was once only possible through one-on-one tutoring.
+
+
+Domain: Educational Data Mining (EDM) and Knowledge Tracing (KT).
+Task: predicting where students are most likely to struggle next.
+
+Content: Middle school math student interaction logs.
+founder statement: "As Bloomy continues to learn from more data, our goal is to move beyond tracking student progress to predicting where students are most likely to struggle next."
+
+---
+
+what the project needs to prove:
+I read past the pitch into the actual technical interview
+I identified his own stated forward gap, not a generic "AI can help you" idea
+I have a working, if simple, mental model of how to approach it
+I shipped something instead of describing something
+
+evidence of initiative + correct problem-framing + honest self-scoping
+
