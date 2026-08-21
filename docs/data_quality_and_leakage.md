@@ -103,3 +103,28 @@ Per (`user_id`, `skill_id`) group, sorted by `opportunity`, for each target atte
 **Split**: `split` column = `"test"` for the last attempt (max `opportunity`) in each group, `"train"` for everything else — per §4's chronological holdout rule. (Expected: 33,603 test rows [groups with n≥2], 383,623 train rows, 417,226 total — matches EDA's 417,226 valid-example figure.)
 
 `data/processed/modeling_dataset.parquet` — 417,216 rows (383,613 train / 33,603 test), 17 columns. That's 10 fewer rows are skill-tagged rows with negative timestamps.
+
+## 9. Feature dictionary — `modeling_dataset.parquet`
+
+One row = one training example: (student, skill) pair, target attempt *k* ≥ 2.
+
+| Column | Type | Represents |
+|---|---|---|
+| `user_id` | int | Student identifier. Identifier only — not a model input (would let the model memorize individual students instead of learning from history). |
+| `skill_id` | int | Target skill identifier for this example. Canonical key (see §6) — the skill the attempt at *k* belongs to. |
+| `skill_name` | string | Human-readable label for `skill_id`, via the global `skill_id → skill_name` lookup (§ Feature table design) — not the possibly-null same-row value. Identifier/display only. |
+| `opportunity` | int | The attempt number *k* being predicted, within this (student, skill) pair's own sequence (1-indexed, per-pair — not a global counter). |
+| `n_prior_attempts` | int | Count of attempts before *k* in this pair (= *k*-1). History depth — also the denominator for every `prior_*_mean`/`prior_*_rate` feature below, and the key variable in the history-thinness finding (`notebooks/feature_relationships.ipynb` §7: signal is weaker when this is low). |
+| `prior_correct_count` | int | Sum of `correct` over attempts 1..*k*-1. Kept for traceability; **redundant with `prior_correct_rate`/`n_prior_attempts`** (VIF ≈ 15) — drop from the model, per feature-relationships notebook §2. |
+| `prior_correct_rate` | float [0,1] | `prior_correct_count / n_prior_attempts` — fraction of prior attempts on this skill the student got right. **Dominant predictor** (r=0.437 with target; monotonic 37.5%→90.3% across deciles). |
+| `prior_hint_count_mean` | float | Mean `hint_count` over attempts 1..*k*-1. Historical aggregate — never same-row (§3). |
+| `prior_attempt_count_mean` | float | Mean `attempt_count` (tries needed per problem) over attempts 1..*k*-1. Historical aggregate — never same-row (§3). |
+| `prior_ms_first_response_mean` | float | Mean of `log1p(ms_first_response)` over attempts 1..*k*-1 (log-transformed per §5 to tame right skew). Response-time signal. |
+| `prior_overlap_time_mean` | float | Mean of `log1p(overlap_time)` over attempts 1..*k*-1 (log-transformed per §5). Highly correlated with `prior_ms_first_response_mean` at the raw level (r=0.946, §3) — check before keeping both. |
+| `prior_hint_used_rate` | float [0,1] | Fraction of attempts 1..*k*-1 where `hint_count > 0`. Second-tier predictor alongside the hint-count mean (r≈-0.33 with target). |
+| `original` | int {0,1} | Same-row context: 1 = main problem, 0 = scaffolding step. Known before the attempt happens (property of the problem, not its outcome) — safe as a same-row feature per §3. |
+| `answer_type` | categorical | Same-row context: the question format (`choose_1`, `choose_n`, `algebra`, `fill_in_1`, `open_response`). Safe same-row feature — describes the problem, not the response. |
+| `tutor_mode` | categorical | Same-row context: `tutor` vs `test`. Safe same-row feature; `test` is rare (0.06%) but shows a real-looking correct-rate gap (§6). |
+| `target_correct` | int {0,1} | **Label.** `correct` at `opportunity == k` — what the model predicts. Never a feature. |
+| `split` | string | `"train"` / `"test"`, assigned by the chronological last-attempt-per-pair rule (§4). Not a feature — controls train/test partitioning only. |
+
