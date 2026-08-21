@@ -78,3 +78,28 @@ Plan: try `log1p` first, evaluate against the baseline model, only add winsorizi
 
 - `first_action` has an undocumented third value (`2`, 8,688 rows / 1.7%) beyond the schema's documented "attempt" (0) / "hint" (1). Treat as unknown/other category rather than guessing its meaning.
 - `assistment_id` is undocumented by the source site but now empirically understood: 1-to-many with `problem_id` (every `problem_id` belongs to exactly one `assistment_id`; 2,990 `assistment_id`s span multiple `problem_id`s — likely a main problem plus its scaffolding steps grouped under one assistment).
+
+---
+
+# Feature table design
+
+Per (`user_id`, `skill_id`) group, sorted by `opportunity`, for each target attempt k = 2..n:
+
+**Target**: `target_correct` = `correct` at `opportunity == k`
+
+**Identifiers** (kept for traceability, not necessarily model inputs): `user_id`, `skill_id`, `skill_name` (via a global `skill_id → skill_name` lookup, since EDA confirmed this is a clean 1:1 mapping — don't pick a possibly-null same-row value), `opportunity` (=k)
+
+**Same-row, safe** (properties of the problem/context, known *before* the attempt happens — not outcome data, so not subject to the §3 leakage rule): `original`, `answer_type`, `tutor_mode`, all taken from the target row (k)
+
+**Historical aggregates** (computed only from rows with `opportunity` 1..k-1 in the same group):
+- `n_prior_attempts` (= k-1)
+- `prior_correct_count`, `prior_correct_rate`
+- `prior_hint_count_mean`
+- `prior_attempt_count_mean`
+- `prior_ms_first_response_mean` (on `log1p`-transformed values, per §5)
+- `prior_overlap_time_mean` (on `log1p`-transformed values, per §5)
+- `prior_hint_used_rate` (fraction of prior attempts with `hint_count > 0`)
+
+**Split**: `split` column = `"test"` for the last attempt (max `opportunity`) in each group, `"train"` for everything else — per §4's chronological holdout rule. (Expected: 33,603 test rows [groups with n≥2], 383,623 train rows, 417,226 total — matches EDA's 417,226 valid-example figure.)
+
+`data/processed/modeling_dataset.parquet` — 417,216 rows (383,613 train / 33,603 test), 17 columns. That's 10 fewer rows are skill-tagged rows with negative timestamps.
