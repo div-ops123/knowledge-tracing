@@ -1,20 +1,20 @@
 [
   {
     "name": "floor_prior_correct_rate",
-    "timestamp": "2026-08-21T14:03:54.646918+00:00",
+    "timestamp": "2026-08-22T00:12:04.408338+00:00",
     "features": [
       "prior_correct_rate"
     ],
     "params": {},
-    "train_logloss": 2.2993899027328912,
-    "test_logloss": 1.8879740025880682,
+    "train_logloss": 2.381897947091716,
+    "test_logloss": 1.9558544456474685,
     "train_pr_auc": 0.5805313955223447,
     "test_pr_auc": 0.525400979550817,
     "notes": "No fitting; p = prior_correct_rate directly. Floor any real model must beat."
   },
   {
     "name": "logistic_regression_v1",
-    "timestamp": "2026-08-21T14:03:56.468249+00:00",
+    "timestamp": "2026-08-22T00:12:06.570313+00:00",
     "features": [
       "prior_correct_rate",
       "n_prior_attempts",
